@@ -45,13 +45,14 @@ function EditExamTimetable() {
 
     } catch (error) {
 
-      console.error(error);
+  console.error(error);
 
-      alert(
-        "Unable to load Exam Timetable."
-      );
+  alert(
+    error?.response?.data?.message ||
+    "Unable to load Exam Timetable."
+  );
 
-    } finally {
+} finally {
 
       setPageLoading(false);
 

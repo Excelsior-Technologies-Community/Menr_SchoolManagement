@@ -361,13 +361,13 @@ function StudentDashboard() {
 
 
                 <ProfileItem
-                  icon={<BookOpen size={16} />}
-                  label="Class"
-                  value={
-                    profile.class_name ||
-                    "-"
-                  }
-                />
+  icon={<BookOpen size={16} />}
+  label="Class"
+  value={
+    profile.class_master_name ||
+    "-"
+  }
+/>
 
 
                 <ProfileItem

@@ -1,11 +1,15 @@
 const express = require("express");
+
 const cors = require("cors");
+
 const path = require("path");
 
 const app = express();
 
 app.use(cors());
+
 app.use(express.json());
+
 app.use(
   "/uploads",
   express.static(
@@ -13,7 +17,11 @@ app.use(
   )
 );
 
-// Routes
+
+// =========================================================
+// ROUTES
+// =========================================================
+
 const authRoutes = require("./src/routes/authRoutes");
 
 const schoolRoutes = require("./src/routes/schoolRoutes");
@@ -27,6 +35,7 @@ const schoolBranchRoutes = require(
 const schoolClassRoutes = require(
   "./src/routes/schoolClassRoutes"
 );
+
 const masterMediumRoutes = require(
   "./src/routes/masterMediumRoutes"
 );
@@ -87,38 +96,75 @@ const feeStructureRoutes = require(
   "./src/routes/feeStructureRoutes"
 );
 
-const feeStructureComponentRoutes = require("./src/routes/feeStructureComponentRoutes");
-const feeInstallmentRoutes = require("./src/routes/feeInstallmentRoutes");
-const feeDiscountRoutes = require("./src/routes/feeDiscountRoutes");
-const feeConcessionRoutes = require("./src/routes/feeConcessionRoutes");
+const feeStructureComponentRoutes = require(
+  "./src/routes/feeStructureComponentRoutes"
+);
+
+const feeInstallmentRoutes = require(
+  "./src/routes/feeInstallmentRoutes"
+);
+
+const feeDiscountRoutes = require(
+  "./src/routes/feeDiscountRoutes"
+);
+
+const feeConcessionRoutes = require(
+  "./src/routes/feeConcessionRoutes"
+);
 
 const studentFeeRoutes = require(
   "./src/routes/studentFeeRoutes"
 );
 
-const eventRoutes = require("./src/routes/eventRoutes");
+const eventRoutes = require(
+  "./src/routes/eventRoutes"
+);
+
 const eventRegistrationRoutes = require(
   "./src/routes/eventRegistrationRoutes"
 );
 
 const libraryFinePaymentRoutes = require(
-"./src/routes/libraryFinePaymentRoutes"
+  "./src/routes/libraryFinePaymentRoutes"
 );
 
 const lostAndFoundRoutes = require(
-"./src/routes/lostAndFoundRoutes"
+  "./src/routes/lostAndFoundRoutes"
 );
+
+
+// =========================================================
+// EXAM ROUTES
+// =========================================================
 
 const examRoutes = require(
   "./src/routes/examRoutes"
 );
+
 const examTimetableRoutes = require(
   "./src/routes/examTimetableRoutes"
+);
+
+const examEligibilityRoutes = require(
+  "./src/routes/examEligibilityRoutes"
+);
+
+const examHallRoutes = require(
+  "./src/routes/examHallRoutes"
+);
+
+const examHallAllocationRoutes = require(
+  "./src/routes/examHallAllocationRoutes"
+);
+
+const examHallSupervisorRoutes = require(
+  "./src/routes/examHallSupervisorRoutes"
 );
 
 const studentMarkRoutes = require(
   "./src/routes/studentMarkRoutes"
 );
+
 
 const dashboardRoutes = require(
   "./src/routes/dashboardRoutes"
@@ -136,37 +182,65 @@ const reportCardRoutes = require(
   "./src/routes/reportCardRoutes"
 );
 
-// Middleware
+
+// =========================================================
+// MIDDLEWARE
+// =========================================================
+
 const errorHandler = require(
   "./src/middlewares/errorHandler"
 );
 
-// Academic Year
+
+// =========================================================
+// ACADEMIC YEAR
+// =========================================================
+
 const academicYearRoutes = require(
   "./src/routes/academicYearRoutes"
 );
 
-// Batch
+
+// =========================================================
+// BATCH
+// =========================================================
+
 const batchRoutes = require(
   "./src/routes/batchRoutes"
 );
 
-// School Period
+
+// =========================================================
+// SCHOOL PERIOD
+// =========================================================
+
 const schoolPeriodRoutes = require(
   "./src/routes/schoolPeriodRoutes"
 );
 
-// Time Table V2
+
+// =========================================================
+// TIME TABLE V2
+// =========================================================
+
 const timeTableV2Routes = require(
   "./src/routes/timeTableV2Routes"
 );
 
-// Time Table Substitution
+
+// =========================================================
+// TIME TABLE SUBSTITUTION
+// =========================================================
+
 const timeTableSubstitutionRoutes = require(
   "./src/routes/timeTableSubstitutionRoutes"
 );
 
-// School Transfer
+
+// =========================================================
+// SCHOOL TRANSFER
+// =========================================================
+
 const schoolTransferRoutes = require(
   "./src/routes/schoolTransferRoutes"
 );
@@ -174,6 +248,7 @@ const schoolTransferRoutes = require(
 const branchTransferRoutes = require(
   "./src/routes/branchTransferRoutes"
 );
+
 
 const admissionInquiryRoutes = require(
   "./src/routes/admissionInquiryRoutes"
@@ -187,8 +262,14 @@ const eventPaymentRoutes = require(
   "./src/routes/eventPaymentRoutes"
 );
 
-const admissionFollowUpRoutes = require("./src/routes/admissionFollowUpRoutes");
-const branchRoutes = require("./src/routes/branchRoutes");
+const admissionFollowUpRoutes = require(
+  "./src/routes/admissionFollowUpRoutes"
+);
+
+const branchRoutes = require(
+  "./src/routes/branchRoutes"
+);
+
 const academicYearSessionRoutes = require(
   "./src/routes/academicYearSessionRoutes"
 );
@@ -196,6 +277,7 @@ const academicYearSessionRoutes = require(
 const staffScheduleRoutes = require(
   "./src/routes/staffScheduleRoutes"
 );
+
 const staffAttendanceRoutes = require(
   "./src/routes/staffAttendanceRoutes"
 );
@@ -207,36 +289,72 @@ const leaveRequestRoutes = require(
 const announcementRoutes =
   require("./src/routes/announcementRoutes");
 
-// Health Check
+
+// =========================================================
+// HEALTH CHECK
+// =========================================================
+
 app.get("/", (req, res) => {
+
   res.status(200).json({
+
     success: true,
+
     message: "API Running Successfully",
+
   });
+
 });
 
-// Authentication
-app.use("/api/auth", authRoutes);
 
-// School Management
-app.use("/api/schools", schoolRoutes);
+// =========================================================
+// AUTHENTICATION
+// =========================================================
+
+app.use(
+  "/api/auth",
+  authRoutes
+);
+
+
+// =========================================================
+// SCHOOL MANAGEMENT
+// =========================================================
+
+app.use(
+  "/api/schools",
+  schoolRoutes
+);
 
 app.use(
   "/api/school-branches",
   schoolBranchRoutes
 );
 
-// Academic Structure
-app.use("/api/classes", classRoutes);
+
+// =========================================================
+// ACADEMIC STRUCTURE
+// =========================================================
+
+app.use(
+  "/api/classes",
+  classRoutes
+);
 
 app.use(
   "/api/school-classes",
   schoolClassRoutes
 );
 
-app.use("/api/sections", sectionRoutes);
+app.use(
+  "/api/sections",
+  sectionRoutes
+);
 
-app.use("/api/subjects", subjectRoutes);
+app.use(
+  "/api/subjects",
+  subjectRoutes
+);
 
 app.use(
   "/api/class-subjects",
@@ -248,8 +366,15 @@ app.use(
   teacherSubjectRoutes
 );
 
-// Staff
-app.use("/api/staff", staffRoutes);
+
+// =========================================================
+// STAFF
+// =========================================================
+
+app.use(
+  "/api/staff",
+  staffRoutes
+);
 
 app.use(
   "/api/staff-types",
@@ -276,10 +401,21 @@ app.use(
   leaveRequestRoutes
 );
 
-// Students
-app.use("/api/students", studentRoutes);
 
-// School Transfers
+// =========================================================
+// STUDENTS
+// =========================================================
+
+app.use(
+  "/api/students",
+  studentRoutes
+);
+
+
+// =========================================================
+// SCHOOL TRANSFERS
+// =========================================================
+
 app.use(
   "/api/school-transfers",
   schoolTransferRoutes
@@ -290,7 +426,11 @@ app.use(
   branchTransferRoutes
 );
 
-// Attendance
+
+// =========================================================
+// ATTENDANCE
+// =========================================================
+
 app.use(
   "/api/attendance",
   attendanceRoutes
@@ -301,54 +441,118 @@ app.use(
   attendanceV2Routes
 );
 
-// Fees
-app.use("/api/fees", feeRoutes);
+
+// =========================================================
+// FEES
+// =========================================================
+
+app.use(
+  "/api/fees",
+  feeRoutes
+);
 
 app.use(
   "/api/fee-structures",
   feeStructureRoutes
 );
 
-
 app.use(
   "/api/fee-structure-components",
   feeStructureComponentRoutes
 );
 
-app.use("/api/fee-installments", feeInstallmentRoutes);
+app.use(
+  "/api/fee-installments",
+  feeInstallmentRoutes
+);
 
 app.use(
   "/api/student-fees",
   studentFeeRoutes
 );
 
-app.use("/api/fee-discounts", feeDiscountRoutes);
-
-app.use("/api/fee-concessions", feeConcessionRoutes);
-
 app.use(
-"/api/library-fine-payments",
-libraryFinePaymentRoutes
+  "/api/fee-discounts",
+  feeDiscountRoutes
 );
 
 app.use(
-"/api/lost-and-found",
-lostAndFoundRoutes
+  "/api/fee-concessions",
+  feeConcessionRoutes
 );
 
-// Exams
-app.use("/api/exams", examRoutes);
+app.use(
+  "/api/library-fine-payments",
+  libraryFinePaymentRoutes
+);
 
+app.use(
+  "/api/lost-and-found",
+  lostAndFoundRoutes
+);
+
+
+// =========================================================
+// EXAMS
+// =========================================================
+
+// Exam Master
+app.use(
+  "/api/exams",
+  examRoutes
+);
+
+
+// Student Marks
 app.use(
   "/api/student-marks",
   studentMarkRoutes
 );
+
+
+// Exam Timetable
 app.use(
   "/api/exam-timetable",
   examTimetableRoutes
 );
 
-app.use("/api/events", eventRoutes);
+
+// Exam Eligibility Settings
+app.use(
+  "/api/exam-eligibility",
+  examEligibilityRoutes
+);
+
+
+// Exam Halls
+app.use(
+  "/api/exam-halls",
+  examHallRoutes
+);
+
+
+// Exam Hall Allocation
+app.use(
+  "/api/exam-hall-allocations",
+  examHallAllocationRoutes
+);
+
+
+// Exam Hall Supervisors
+app.use(
+  "/api/exam-hall-supervisors",
+  examHallSupervisorRoutes
+);
+
+
+// =========================================================
+// EVENTS
+// =========================================================
+
+app.use(
+  "/api/events",
+  eventRoutes
+);
 
 app.use(
   "/api/event-registrations",
@@ -356,21 +560,35 @@ app.use(
 );
 
 app.use(
+  "/api/event-payments",
+  eventPaymentRoutes
+);
+
+
+// =========================================================
+// ACADEMIC YEAR SESSIONS
+// =========================================================
+
+app.use(
   "/api/academic-year-sessions",
   academicYearSessionRoutes
 );
 
-app.use(
-  "/api/event-payments",
-  eventPaymentRoutes
-);
+
+// =========================================================
+// REPORT CARDS
+// =========================================================
 
 app.use(
   "/api/report-cards",
   reportCardRoutes
 );
 
-// Timetable
+
+// =========================================================
+// TIMETABLE
+// =========================================================
+
 app.use(
   "/api/timetables",
   timetableRoutes
@@ -386,78 +604,147 @@ app.use(
   schoolMediumRoutes
 );
 
-// Academic Years
+
+// =========================================================
+// ACADEMIC YEARS
+// =========================================================
+
 app.use(
   "/api/academic-years",
   academicYearRoutes
 );
 
-// Batches
+
+// =========================================================
+// BATCHES
+// =========================================================
+
 app.use(
   "/api/batches",
   batchRoutes
 );
 
-// School Periods
+
+// =========================================================
+// SCHOOL PERIODS
+// =========================================================
+
 app.use(
   "/api/school-periods",
   schoolPeriodRoutes
 );
 
-// Timetable V2
+
+// =========================================================
+// TIMETABLE V2
+// =========================================================
+
 app.use(
   "/api/timetable-v2",
   timeTableV2Routes
 );
 
-// Timetable Substitutions
+
+// =========================================================
+// TIMETABLE SUBSTITUTIONS
+// =========================================================
+
 app.use(
   "/api/timetable-substitutions",
   timeTableSubstitutionRoutes
 );
 
-// Dashboard
+
+// =========================================================
+// DASHBOARD
+// =========================================================
+
 app.use(
   "/api/dashboard",
   dashboardRoutes
 );
 
 
-app.use("/api/branches", branchRoutes);
+// =========================================================
+// BRANCHES
+// =========================================================
 
-// Profile
+app.use(
+  "/api/branches",
+  branchRoutes
+);
+
+
+// =========================================================
+// PROFILE
+// =========================================================
+
 app.use(
   "/api/profile",
   profileRoutes
 );
 
 
+// =========================================================
+// ADMISSION INQUIRIES
+// =========================================================
+
 app.use(
   "/api/admission-inquiries",
   admissionInquiryRoutes
 );
+
+
+// =========================================================
+// ACHIEVEMENTS
+// =========================================================
 
 app.use(
   "/api/achievements",
   achievementRoutes
 );
 
+
+// =========================================================
+// ANNOUNCEMENTS
+// =========================================================
+
 app.use(
   "/api/announcements",
   announcementRoutes
 );
 
+
+// =========================================================
+// ADMISSION FOLLOW UPS
+// =========================================================
+
 app.use(
-    "/api/admission-follow-ups",
-    admissionFollowUpRoutes
+  "/api/admission-follow-ups",
+  admissionFollowUpRoutes
 );
 
 
+// =========================================================
 // AI
-app.use("/api/ai", aiRoutes);
+// =========================================================
 
-// Error Handler (Always Last)
+app.use(
+  "/api/ai",
+  aiRoutes
+);
+
+
+// =========================================================
+// ERROR HANDLER
+// ALWAYS LAST
+// =========================================================
+
 app.use(errorHandler);
 
+
+// =========================================================
+// EXPORT
+// =========================================================
 
 module.exports = app;

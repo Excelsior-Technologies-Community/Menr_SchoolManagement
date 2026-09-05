@@ -1,441 +1,674 @@
 import {
   useEffect,
-  useMemo,
   useState
 } from "react";
 
 import {
-  useNavigate
-} from "react-router-dom";
-
-import AdminLayout
-from "../../layouts/AdminLayout";
-
-import TimeTableSubstitutionHeader
-from "../../components/TimeTableSubstitution/TimeTableSubstitutionHeader";
-
-import TimeTableSubstitutionFilters
-from "../../components/TimeTableSubstitution/TimeTableSubstitutionFilters";
-
-import TimeTableSubstitutionTable
-from "../../components/TimeTableSubstitution/TimeTableSubstitutionTable";
-
-import DeleteTimeTableSubstitutionModal
-from "../../components/TimeTableSubstitution/DeleteTimeTableSubstitutionModal";
+  getTimeTables
+} from "../../services/timetableService";
 
 import {
+  getStaff
+} from "../../services/staffService";
 
-  getTimeTableSubstitutions,
 
-  deleteTimeTableSubstitution
+function TimeTableSubstitutionForm({
 
-}
-from "../../services/timeTableSubstitutionService";
+  initialData = null,
 
-function TimeTableSubstitution() {
+  onSubmit,
 
-  const navigate =
-    useNavigate();
+  loading = false
 
-  // ===========================
-  // States
-  // ===========================
+}) {
 
   const [
-
-    substitutions,
-
-    setSubstitutions
-
+    timetables,
+    setTimetables
   ] = useState([]);
 
   const [
-
-    filteredSubstitutions,
-
-    setFilteredSubstitutions
-
+    teachers,
+    setTeachers
   ] = useState([]);
 
   const [
+    formData,
+    setFormData
+  ] = useState({
 
-    loading,
+    time_table_id: "",
 
-    setLoading
+    substitute_teacher_id: "",
 
-  ] = useState(true);
+    substitution_date: "",
 
-  const [
+    reason: "",
 
-    deleteLoading,
+    remark: "",
 
-    setDeleteLoading
+    status: "active"
 
-  ] = useState(false);
+  });
 
-  const [
 
-    search,
-
-    setSearch
-
-  ] = useState("");
-
-  const [
-
-    status,
-
-    setStatus
-
-  ] = useState("");
-
-  const [
-
-    deleteModal,
-
-    setDeleteModal
-
-  ] = useState(false);
-
-  const [
-
-    selectedId,
-
-    setSelectedId
-
-  ] = useState(null);
-
-  const [
-
-    error,
-
-    setError
-
-  ] = useState("");
-
-  // ===========================
-  // Fetch Data
-  // ===========================
-
-  const fetchSubstitutions =
-  async () => {
-
-    try {
-
-      setLoading(true);
-
-      const response =
-        await getTimeTableSubstitutions();
-
-      const data =
-        response.data || [];
-
-      setSubstitutions(data);
-
-      setFilteredSubstitutions(data);
-
-      setError("");
-
-    }
-
-    catch (error) {
-
-      console.log(error);
-
-      setError(
-        "Unable to fetch substitutions."
-      );
-
-    }
-
-    finally {
-
-      setLoading(false);
-
-    }
-
-  };
+  // =====================================================
+  // LOAD DROPDOWNS
+  // =====================================================
 
   useEffect(() => {
 
-    fetchSubstitutions();
+    fetchDropdowns();
 
   }, []);
 
-  // ===========================
-  // Filters
-  // ===========================
 
-  const filteredData =
-  useMemo(() => {
-
-    let data = [
-
-      ...substitutions
-
-    ];
-
-    if (search.trim()) {
-
-      const keyword =
-        search.toLowerCase();
-
-      data = data.filter(
-
-        (item) =>
-
-          item.original_teacher
-            ?.toLowerCase()
-            .includes(keyword)
-
-          ||
-
-          item.substitute_teacher
-            ?.toLowerCase()
-            .includes(keyword)
-
-          ||
-
-          item.reason
-            ?.toLowerCase()
-            .includes(keyword)
-
-      );
-
-    }
-
-    if (status !== "") {
-
-      data = data.filter(
-
-        (item) =>
-
-          item.status === status
-
-      );
-
-    }
-
-    return data;
-
-  }, [
-
-    substitutions,
-
-    search,
-
-    status
-
-  ]);
-
-  useEffect(() => {
-
-    setFilteredSubstitutions(
-
-      filteredData
-
-    );
-
-  }, [
-
-    filteredData
-
-  ]);
-
-  // ===========================
-  // Reset
-  // ===========================
-
-  const handleReset = () => {
-
-    setSearch("");
-
-    setStatus("");
-
-  };
-
-  // ===========================
-  // View
-  // ===========================
-
-  const handleView = (id) => {
-
-    navigate(
-
-      `/timetable-substitutions/view/${id}`
-
-    );
-
-  };
-
-  // ===========================
-  // Edit
-  // ===========================
-
-  const handleEdit = (id) => {
-
-    navigate(
-
-      `/timetable-substitutions/edit/${id}`
-
-    );
-
-  };
-
-  // ===========================
-  // Delete Modal
-  // ===========================
-
-  const handleDeleteClick =
-  (id) => {
-
-    setSelectedId(id);
-
-    setDeleteModal(true);
-
-  };
-
-  const closeDeleteModal =
-  () => {
-
-    setDeleteModal(false);
-
-    setSelectedId(null);
-
-  };
-    // ===========================
-  // Delete API
-  // ===========================
-
-  const handleDelete = async () => {
-
-    if (!selectedId) return;
+  const fetchDropdowns = async () => {
 
     try {
 
-      setDeleteLoading(true);
+      const [
+        timetableRes,
+        teacherRes
+      ] = await Promise.all([
 
-      await deleteTimeTableSubstitution(
-        selectedId
+        getTimeTables(),
+
+        getStaff()
+
+      ]);
+
+
+      setTimetables(
+        timetableRes.data || []
       );
 
-      closeDeleteModal();
-
-      await fetchSubstitutions();
+      setTeachers(
+        teacherRes.data || []
+      );
 
     } catch (error) {
 
-      console.log(error);
-
-      alert(
-
-        error.response?.data?.message ||
-
-        "Failed to delete substitution."
-
+      console.error(
+        "Dropdown Error:",
+        error
       );
-
-    } finally {
-
-      setDeleteLoading(false);
 
     }
 
   };
 
-  // ===========================
-  // Return
-  // ===========================
+
+  // =====================================================
+  // EDIT MODE
+  // =====================================================
+
+  useEffect(() => {
+
+    if (!initialData) return;
+
+    setFormData({
+
+      time_table_id:
+        initialData.time_table_id || "",
+
+      substitute_teacher_id:
+        initialData.substitute_teacher_id || "",
+
+      substitution_date:
+        initialData.substitution_date
+        ? String(
+            initialData.substitution_date
+          ).substring(0, 10)
+        : "",
+
+      reason:
+        initialData.reason || "",
+
+      remark:
+        initialData.remark || "",
+
+      status:
+        initialData.status || "active"
+
+    });
+
+  }, [
+    initialData
+  ]);
+
+
+  // =====================================================
+  // HANDLE CHANGE
+  // =====================================================
+
+  const handleChange = (e) => {
+
+    const {
+      name,
+      value
+    } = e.target;
+
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+
+  };
+
+
+  // =====================================================
+  // SUBMIT
+  // =====================================================
+
+  const handleSubmit = (e) => {
+
+    e.preventDefault();
+
+    if (
+      !formData.time_table_id
+    ) {
+
+      alert(
+        "Please select timetable"
+      );
+
+      return;
+
+    }
+
+
+    if (
+      !formData.substitute_teacher_id
+    ) {
+
+      alert(
+        "Please select substitute teacher"
+      );
+
+      return;
+
+    }
+
+
+    onSubmit(formData);
+
+  };
+
+
+  // =====================================================
+  // GET SELECTED TIMETABLE
+  // =====================================================
+
+  const selectedTimetable =
+    timetables.find(
+      (item) =>
+        Number(item.time_table_id) ===
+        Number(formData.time_table_id)
+    );
+
+
+  // =====================================================
+  // ORIGINAL TEACHER
+  // =====================================================
+
+  const originalTeacher =
+    selectedTimetable?.teacher_id;
+
 
   return (
 
-    <AdminLayout>
+    <form
+      onSubmit={handleSubmit}
+      className="
+        bg-white
+        rounded-xl
+        shadow-md
+        p-8
+      "
+    >
 
-      <div className="bg-slate-100 min-h-screen">
+      <div
+        className="
+          grid
+          grid-cols-1
+          md:grid-cols-2
+          gap-6
+        "
+      >
 
-        {/* Header */}
+        {/* ================================================= */}
+        {/* TIMETABLE */}
+        {/* ================================================= */}
 
-        <TimeTableSubstitutionHeader />
+        <div>
 
-        {/* Filters */}
+          <label className="block mb-2 font-medium">
 
-        <TimeTableSubstitutionFilters
+            Timetable
 
-          search={search}
+          </label>
 
-          setSearch={setSearch}
+          <select
 
-          status={status}
+            name="time_table_id"
 
-          setStatus={setStatus}
+            value={
+              formData.time_table_id
+            }
 
-          onReset={handleReset}
+            onChange={handleChange}
 
-        />
+            required
 
-        {/* Error */}
+            className="
+              w-full
+              border
+              rounded-lg
+              px-4
+              py-3
+            "
+          >
 
-        {
+            <option value="">
 
-          error && (
+              Select Timetable
 
-            <div
-              className="
-                bg-red-100
-                border
-                border-red-300
-                text-red-700
-                rounded-xl
-                px-5
-                py-4
-                mb-6
-              "
-            >
+            </option>
 
-              {error}
 
-            </div>
+            {timetables.map(
+              (item) => (
 
-          )
+                <option
+                  key={
+                    item.time_table_id
+                  }
+                  value={
+                    item.time_table_id
+                  }
+                >
 
-        }
+                  {item.batch_code ||
+                    `Batch ${item.batch_id}`}
 
-        {/* Table */}
+                  {" | "}
 
-        <TimeTableSubstitutionTable
+                  {item.subject_name ||
+                    `Subject ${item.school_subject_id}`}
 
-          substitutions={filteredSubstitutions}
+                  {" | "}
 
-          loading={loading}
+                  {item.day_of_week}
 
-          onView={handleView}
+                </option>
 
-          onEdit={handleEdit}
+              )
+            )}
 
-          onDelete={handleDeleteClick}
+          </select>
 
-        />
+        </div>
 
-        {/* Delete Modal */}
 
-        <DeleteTimeTableSubstitutionModal
+        {/* ================================================= */}
+        {/* ORIGINAL TEACHER - AUTO */}
+        {/* ================================================= */}
 
-          isOpen={deleteModal}
+        <div>
 
-          onClose={closeDeleteModal}
+          <label className="block mb-2 font-medium">
 
-          onConfirm={handleDelete}
+            Original Teacher
 
-          loading={deleteLoading}
+          </label>
 
-        />
+          <input
+
+            type="text"
+
+            value={
+
+              selectedTimetable?.teacher_name ||
+
+              teachers.find(
+                (teacher) =>
+                  Number(teacher.id) ===
+                  Number(originalTeacher)
+              )?.full_name ||
+
+              initialData?.original_teacher ||
+
+              "Select timetable first"
+
+            }
+
+            readOnly
+
+            className="
+              w-full
+              border
+              bg-slate-100
+              rounded-lg
+              px-4
+              py-3
+              text-slate-600
+            "
+
+          />
+
+        </div>
+
+
+        {/* ================================================= */}
+        {/* SUBSTITUTE TEACHER */}
+        {/* ================================================= */}
+
+        <div>
+
+          <label className="block mb-2 font-medium">
+
+            Substitute Teacher
+
+          </label>
+
+          <select
+
+            name="substitute_teacher_id"
+
+            value={
+              formData.substitute_teacher_id
+            }
+
+            onChange={handleChange}
+
+            required
+
+            className="
+              w-full
+              border
+              rounded-lg
+              px-4
+              py-3
+            "
+          >
+
+            <option value="">
+
+              Select Substitute Teacher
+
+            </option>
+
+
+            {teachers
+              .filter(
+                (teacher) =>
+                  Number(teacher.id) !==
+                  Number(originalTeacher)
+              )
+              .map(
+                (teacher) => (
+
+                  <option
+                    key={teacher.id}
+                    value={teacher.id}
+                  >
+
+                    {teacher.full_name}
+
+                  </option>
+
+                )
+              )}
+
+          </select>
+
+        </div>
+
+
+        {/* ================================================= */}
+        {/* DATE */}
+        {/* ================================================= */}
+
+        <div>
+
+          <label className="block mb-2 font-medium">
+
+            Substitution Date
+
+          </label>
+
+          <input
+
+            type="date"
+
+            name="substitution_date"
+
+            value={
+              formData.substitution_date
+            }
+
+            onChange={handleChange}
+
+            required
+
+            className="
+              w-full
+              border
+              rounded-lg
+              px-4
+              py-3
+            "
+
+          />
+
+        </div>
+
+
+        {/* ================================================= */}
+        {/* REASON */}
+        {/* ================================================= */}
+
+        <div className="md:col-span-2">
+
+          <label className="block mb-2 font-medium">
+
+            Reason
+
+          </label>
+
+          <input
+
+            type="text"
+
+            name="reason"
+
+            value={
+              formData.reason
+            }
+
+            onChange={handleChange}
+
+            placeholder="Enter substitution reason"
+
+            className="
+              w-full
+              border
+              rounded-lg
+              px-4
+              py-3
+            "
+
+          />
+
+        </div>
+
+
+        {/* ================================================= */}
+        {/* REMARK */}
+        {/* ================================================= */}
+
+        <div className="md:col-span-2">
+
+          <label className="block mb-2 font-medium">
+
+            Remark
+
+          </label>
+
+          <textarea
+
+            rows="4"
+
+            name="remark"
+
+            value={
+              formData.remark
+            }
+
+            onChange={handleChange}
+
+            placeholder="Additional remark"
+
+            className="
+              w-full
+              border
+              rounded-lg
+              px-4
+              py-3
+            "
+
+          />
+
+        </div>
+
+
+        {/* ================================================= */}
+        {/* STATUS */}
+        {/* ================================================= */}
+
+        <div>
+
+          <label className="block mb-2 font-medium">
+
+            Status
+
+          </label>
+
+          <select
+
+            name="status"
+
+            value={
+              formData.status
+            }
+
+            onChange={handleChange}
+
+            className="
+              w-full
+              border
+              rounded-lg
+              px-4
+              py-3
+            "
+          >
+
+            <option value="active">
+
+              Active
+
+            </option>
+
+            <option value="inactive">
+
+              Inactive
+
+            </option>
+
+          </select>
+
+        </div>
+
+
+        {/* ================================================= */}
+        {/* BUTTONS */}
+        {/* ================================================= */}
+
+        <div
+          className="
+            md:col-span-2
+            flex
+            justify-end
+            gap-4
+            mt-8
+          "
+        >
+
+          <button
+
+            type="button"
+
+            onClick={() =>
+              window.history.back()
+            }
+
+            className="
+              px-6
+              py-3
+              rounded-lg
+              border
+              border-slate-300
+              hover:bg-slate-100
+            "
+          >
+
+            Cancel
+
+          </button>
+
+
+          <button
+
+            type="submit"
+
+            disabled={loading}
+
+            className="
+              px-8
+              py-3
+              rounded-lg
+              bg-blue-600
+              hover:bg-blue-700
+              text-white
+              font-semibold
+              disabled:opacity-50
+            "
+          >
+
+            {loading
+
+              ? "Saving..."
+
+              : initialData
+
+              ? "Update Substitution"
+
+              : "Create Substitution"
+
+            }
+
+          </button>
+
+        </div>
 
       </div>
 
-    </AdminLayout>
+    </form>
 
   );
 
 }
 
-export default TimeTableSubstitution;
+
+export default TimeTableSubstitutionForm;

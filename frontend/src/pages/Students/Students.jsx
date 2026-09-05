@@ -1,15 +1,23 @@
-import { useEffect, useState } from "react";
-import AdminLayout from "../../layouts/AdminLayout";
-import AddStudent from "./AddStudent";
+import {
+  useEffect,
+  useState
+} from "react";
+
+import AdminLayout
+  from "../../layouts/AdminLayout";
+
+import AddStudent
+  from "./AddStudent";
 
 import EditStudentModal
-from "./EditStudentModal";
+  from "./EditStudentModal";
 
 import {
   getStudents,
   createStudent,
   updateStudentStatus,
-  updateStudent
+  updateStudent,
+  deleteStudent
 } from "../../services/studentService";
 
 import {
@@ -20,17 +28,35 @@ import {
   getSchoolClasses
 } from "../../services/schoolClassService";
 
+import {
+  getSectionsByClass
+} from "../../services/sectionService";
+
+import {
+  getBatches
+} from "../../services/batchService";
+
 
 function Students() {
+
+  // =========================================================
+  // STATE
+  // =========================================================
 
   const [students, setStudents] =
     useState([]);
 
-    const [branches, setBranches] =
-useState([]);
+  const [branches, setBranches] =
+    useState([]);
 
-const [schoolClasses, setSchoolClasses] =
-useState([]);
+  const [schoolClasses, setSchoolClasses] =
+    useState([]);
+
+  const [sections, setSections] =
+    useState([]);
+
+  const [batches, setBatches] =
+    useState([]);
 
   const [loading, setLoading] =
     useState(true);
@@ -40,13 +66,23 @@ useState([]);
 
   const [search, setSearch] =
     useState("");
-    const [selectedStudent,
-  setSelectedStudent] =
-  useState(null);
 
-const [showEditModal,
-  setShowEditModal] =
-  useState(false);
+  const [selectedStudent, setSelectedStudent] =
+    useState(null);
+
+  const [showEditModal, setShowEditModal] =
+    useState(false);
+
+  const [deletingId, setDeletingId] =
+    useState(null);
+
+  const [statusUpdatingId, setStatusUpdatingId] =
+    useState(null);
+
+
+  // =========================================================
+  // INITIAL LOAD
+  // =========================================================
 
   useEffect(() => {
 
@@ -54,46 +90,119 @@ const [showEditModal,
 
   }, []);
 
- const fetchStudents = async () => {
 
-  try {
+  // =========================================================
+  // FETCH ALL DATA
+  // =========================================================
 
-    setLoading(true);
+  const fetchStudents = async () => {
 
-    const response =
-      await getStudents();
+    try {
 
-    setStudents(
-      response.data || []
-    );
+      setLoading(true);
 
-    // Branches Load
-    const branchRes =
-      await getSchoolBranches();
 
-    setBranches(
-      branchRes.data || []
-    );
+      // Students
+      const studentRes =
+        await getStudents();
 
-    // School Classes Load
-    const classRes =
-      await getSchoolClasses();
+      setStudents(
+        studentRes?.data || []
+      );
 
-    setSchoolClasses(
-      classRes.data || []
-    );
 
-  } catch (error) {
+      // Branches
+      const branchRes =
+        await getSchoolBranches();
 
-    console.log(error);
+      setBranches(
+        branchRes?.data || []
+      );
 
-  } finally {
 
-    setLoading(false);
+      // Classes
+      const classRes =
+        await getSchoolClasses();
 
-  }
+      setSchoolClasses(
+        classRes?.data || []
+      );
 
-};
+
+      // Batches
+      const batchRes =
+        await getBatches();
+
+      setBatches(
+        batchRes?.data || []
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "STUDENT PAGE LOAD ERROR:",
+        error
+      );
+
+      alert(
+        error.response?.data?.message ||
+        "Failed to load student data"
+      );
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  };
+
+
+  // =========================================================
+  // LOAD SECTIONS BY CLASS
+  // =========================================================
+
+  const loadSectionsByClass =
+    async (schoolClassId) => {
+
+      if (!schoolClassId) {
+
+        setSections([]);
+
+        return;
+
+      }
+
+
+      try {
+
+        const response =
+          await getSectionsByClass(
+            schoolClassId
+          );
+
+        setSections(
+          response?.data || []
+        );
+
+      } catch (error) {
+
+        console.error(
+          "SECTION LOAD ERROR:",
+          error
+        );
+
+        setSections([]);
+
+      }
+
+    };
+
+
+  // =========================================================
+  // ADD STUDENT
+  // =========================================================
 
   const handleAddStudent =
     async (studentData) => {
@@ -102,45 +211,47 @@ const [showEditModal,
 
         setAdding(true);
 
+
         console.log(
           "Student Data Sent:",
           studentData
         );
+
 
         const response =
           await createStudent(
             studentData
           );
 
+
         console.log(
           "Create Response:",
           response
         );
 
+
         alert(
           "Student Added Successfully"
         );
 
+
         await fetchStudents();
+
 
       } catch (error) {
 
-        console.log(
-          "Full Error:",
+        console.error(
+          "CREATE STUDENT ERROR:",
           error
         );
 
-        console.log(
-          "Response Data:",
-          error.response?.data
-        );
 
         alert(
-          JSON.stringify(
-            error.response?.data ||
-            error.message
-          )
+          error.response?.data?.message ||
+          error.message ||
+          "Failed To Create Student"
         );
+
 
       } finally {
 
@@ -150,6 +261,11 @@ const [showEditModal,
 
     };
 
+
+  // =========================================================
+  // STATUS CHANGE
+  // =========================================================
+
   const handleStatusChange =
     async (
       id,
@@ -158,120 +274,365 @@ const [showEditModal,
 
       try {
 
+        setStatusUpdatingId(id);
+
+
         const newStatus =
-          currentStatus ===
-          "ACTIVE"
+          currentStatus === "ACTIVE"
             ? "INACTIVE"
             : "ACTIVE";
+
 
         await updateStudentStatus(
           id,
           newStatus
         );
 
+
         alert(
-          "Status Updated"
+          "Student Status Updated Successfully"
         );
+
 
         await fetchStudents();
 
+
       } catch (error) {
 
-        console.log(error);
+        console.error(
+          "STATUS UPDATE ERROR:",
+          error
+        );
+
 
         alert(
+          error.response?.data?.message ||
           "Failed To Update Status"
+        );
+
+
+      } finally {
+
+        setStatusUpdatingId(null);
+
+      }
+
+    };
+
+
+  // =========================================================
+  // DELETE STUDENT
+  // =========================================================
+
+  const handleDeleteStudent =
+    async (id) => {
+
+      const confirmed =
+        window.confirm(
+          "Are you sure you want to delete this student?"
+        );
+
+
+      if (!confirmed) {
+        return;
+      }
+
+
+      try {
+
+        setDeletingId(id);
+
+
+        await deleteStudent(
+          id
+        );
+
+
+        alert(
+          "Student Deleted Successfully"
+        );
+
+
+        await fetchStudents();
+
+
+      } catch (error) {
+
+        console.error(
+          "DELETE STUDENT ERROR:",
+          error
+        );
+
+
+        alert(
+          error.response?.data?.message ||
+          error.message ||
+          "Failed To Delete Student"
+        );
+
+
+      } finally {
+
+        setDeletingId(null);
+
+      }
+
+    };
+
+
+  // =========================================================
+  // SEARCH
+  // =========================================================
+
+  const filteredStudents =
+    students.filter(
+      (student) => {
+
+        const searchValue =
+          search
+            .trim()
+            .toLowerCase();
+
+
+        if (!searchValue) {
+          return true;
+        }
+
+
+        return (
+
+          student.full_name
+            ?.toLowerCase()
+            .includes(searchValue)
+
+          ||
+
+          student.roll_number
+            ?.toLowerCase()
+            .includes(searchValue)
+
+          ||
+
+          student.email
+            ?.toLowerCase()
+            .includes(searchValue)
+
+          ||
+
+          student.phone
+            ?.toLowerCase()
+            .includes(searchValue)
+
+          ||
+
+          student.class_name
+            ?.toLowerCase()
+            .includes(searchValue)
+
+          ||
+
+          student.branch_name
+            ?.toLowerCase()
+            .includes(searchValue)
+
+          ||
+
+          student.section_name
+            ?.toLowerCase()
+            .includes(searchValue)
+
+        );
+
+      }
+    );
+
+
+  // =========================================================
+  // EDIT CLICK
+  // =========================================================
+
+  const handleEditClick =
+    async (student) => {
+
+      setSelectedStudent(
+        student
+      );
+
+
+      setShowEditModal(
+        true
+      );
+
+
+      // Load sections for student's class
+      if (
+        student.school_class_id
+      ) {
+
+        await loadSectionsByClass(
+          student.school_class_id
+        );
+
+      } else {
+
+        setSections([]);
+
+      }
+
+    };
+
+
+  // =========================================================
+  // UPDATE STUDENT
+  // =========================================================
+
+  const handleUpdateStudent =
+    async (
+      id,
+      updatedData
+    ) => {
+
+      try {
+
+        await updateStudent(
+          id,
+          updatedData
+        );
+
+
+        alert(
+          "Student Updated Successfully"
+        );
+
+
+        setShowEditModal(
+          false
+        );
+
+        setSelectedStudent(
+          null
+        );
+
+
+        await fetchStudents();
+
+
+      } catch (error) {
+
+        console.error(
+          "UPDATE STUDENT ERROR:",
+          error
+        );
+
+
+        alert(
+          error.response?.data?.message ||
+          error.message ||
+          "Failed To Update Student"
         );
 
       }
 
     };
 
-  const filteredStudents =
-    students.filter(
-      (student) =>
-        student.full_name
-          ?.toLowerCase()
-          .includes(
-            search.toLowerCase()
-          )
-    );
-const handleEditClick =
-  (student) => {
 
-    setSelectedStudent(
-      student
-    );
+  // =========================================================
+  // CLOSE EDIT MODAL
+  // =========================================================
 
-    setShowEditModal(
-      true
-    );
-
-};
-
-const handleUpdateStudent =
-  async (
-    id,
-    updatedData
-  ) => {
-
-    try {
-
-      await updateStudent(
-        id,
-        updatedData
-      );
-
-      alert(
-        "Student Updated Successfully"
-      );
+  const handleCloseEdit =
+    () => {
 
       setShowEditModal(
         false
       );
 
-      await fetchStudents();
-
-    } catch (error) {
-
-      console.log(error);
-
-      alert(
-        "Failed To Update Student"
+      setSelectedStudent(
+        null
       );
 
-    }
+    };
 
-};
+
+  // =========================================================
+  // UI
+  // =========================================================
+
   return (
 
     <AdminLayout>
 
-      <div className="min-h-screen bg-slate-100 p-8">
+      <div
+        className="
+          min-h-screen
+          bg-slate-100
+          p-8
+        "
+      >
 
-        {/* Header */}
+        {/* ================================================= */}
+        {/* HEADER */}
+        {/* ================================================= */}
 
-        <div className="flex justify-between items-center mb-6">
+        <div
+          className="
+            flex
+            justify-between
+            items-center
+            mb-6
+          "
+        >
 
           <div>
 
-            <h1 className="text-3xl font-bold text-slate-800">
+            <h1
+              className="
+                text-3xl
+                font-bold
+                text-slate-800
+              "
+            >
               Students
             </h1>
 
-            <p className="text-gray-500 mt-1">
+            <p
+              className="
+                text-gray-500
+                mt-1
+              "
+            >
               Manage Students Information
             </p>
 
           </div>
 
-          <div className="bg-white px-6 py-3 rounded-xl shadow-sm">
 
-            <h3 className="text-sm text-gray-500">
+          <div
+            className="
+              bg-white
+              px-6
+              py-3
+              rounded-xl
+              shadow-sm
+            "
+          >
+
+            <h3
+              className="
+                text-sm
+                text-gray-500
+              "
+            >
               Total Students
             </h3>
 
-            <p className="text-2xl font-bold text-blue-600">
+            <p
+              className="
+                text-2xl
+                font-bold
+                text-blue-600
+              "
+            >
               {students.length}
             </p>
 
@@ -279,36 +640,109 @@ const handleUpdateStudent =
 
         </div>
 
-        {/* Search */}
 
-        <div className="mb-6">
+        {/* ================================================= */}
+        {/* SEARCH */}
+        {/* ================================================= */}
+
+        <div
+          className="
+            mb-6
+            flex
+            flex-col
+            md:flex-row
+            gap-3
+          "
+        >
 
           <input
             type="text"
-            placeholder="Search Student..."
+            placeholder="
+              Search by name, roll number,
+              email, phone, class...
+            "
             value={search}
             onChange={(e) =>
               setSearch(
                 e.target.value
               )
             }
-            className="w-full md:w-96 border p-3 rounded-lg bg-white"
+            className="
+              w-full
+              md:w-96
+              border
+              p-3
+              rounded-lg
+              bg-white
+              outline-none
+              focus:ring-2
+              focus:ring-blue-500
+            "
           />
+
+
+          {search && (
+
+            <button
+              type="button"
+              onClick={() =>
+                setSearch("")
+              }
+              className="
+                px-5
+                py-3
+                bg-gray-200
+                hover:bg-gray-300
+                rounded-lg
+              "
+            >
+              Clear
+            </button>
+
+          )}
 
         </div>
 
-        {/* Add Student */}
 
-        <div className="mb-8">
+        {/* ================================================= */}
+        {/* ADD STUDENT */}
+        {/* ================================================= */}
 
-         <AddStudent
-  onAdd={handleAddStudent}
-  branches={branches}
-  schoolClasses={schoolClasses}
-/>
+        <div
+          className="mb-8"
+        >
+
+          <AddStudent
+            onAdd={
+              handleAddStudent
+            }
+            branches={
+              branches
+            }
+            schoolClasses={
+              schoolClasses
+            }
+            sections={
+              sections
+            }
+            batches={
+              batches
+            }
+            onClassChange={
+              loadSectionsByClass
+            }
+          />
+
+
           {adding && (
 
-            <p className="mt-3 text-blue-600 font-medium">
+            <p
+              className="
+                mt-3
+                text-blue-600
+                font-medium
+              "
+            >
               Saving Student...
             </p>
 
@@ -316,23 +750,77 @@ const handleUpdateStudent =
 
         </div>
 
-        {/* Table */}
 
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        {/* ================================================= */}
+        {/* STUDENTS TABLE */}
+        {/* ================================================= */}
 
-          <div className="p-5 border-b">
+        <div
+          className="
+            bg-white
+            rounded-xl
+            shadow-sm
+            overflow-hidden
+          "
+        >
 
-            <h2 className="text-xl font-semibold">
-              Students List
-            </h2>
+          <div
+            className="
+              p-5
+              border-b
+              flex
+              justify-between
+              items-center
+            "
+          >
+
+            <div>
+
+              <h2
+                className="
+                  text-xl
+                  font-semibold
+                "
+              >
+                Students List
+              </h2>
+
+              <p
+                className="
+                  text-sm
+                  text-gray-500
+                  mt-1
+                "
+              >
+                Showing{" "}
+                {filteredStudents.length}
+                {" "}of{" "}
+                {students.length}
+                {" "}students
+              </p>
+
+            </div>
 
           </div>
 
-          <div className="overflow-x-auto">
 
-            <table className="w-full">
+          <div
+            className="
+              overflow-x-auto
+            "
+          >
 
-              <thead className="bg-slate-50">
+            <table
+              className="
+                w-full
+              "
+            >
+
+              <thead
+                className="
+                  bg-slate-50
+                "
+              >
 
                 <tr>
 
@@ -349,16 +837,20 @@ const handleUpdateStudent =
                   </th>
 
                   <th className="p-4 text-left">
-  Class
-</th>
+                    Class
+                  </th>
 
-<th className="p-4 text-left">
-  Branch
-</th>
+                  <th className="p-4 text-left">
+                    Branch
+                  </th>
 
-<th className="p-4 text-left">
-  Section
-</th>
+                  <th className="p-4 text-left">
+                    Section
+                  </th>
+
+                  <th className="p-4 text-left">
+                    Batch
+                  </th>
 
                   <th className="p-4 text-left">
                     Phone
@@ -369,12 +861,13 @@ const handleUpdateStudent =
                   </th>
 
                   <th className="p-4 text-left">
-                    Action
+                    Actions
                   </th>
 
                 </tr>
 
               </thead>
+
 
               <tbody>
 
@@ -383,10 +876,14 @@ const handleUpdateStudent =
                   <tr>
 
                     <td
-                      colSpan="8"
-                      className="p-6 text-center"
+                      colSpan="10"
+                      className="
+                        p-8
+                        text-center
+                        text-gray-500
+                      "
                     >
-                      Loading...
+                      Loading Students...
                     </td>
 
                   </tr>
@@ -396,8 +893,12 @@ const handleUpdateStudent =
                   <tr>
 
                     <td
-                      colSpan="8"
-                      className="p-6 text-center"
+                      colSpan="10"
+                      className="
+                        p-8
+                        text-center
+                        text-gray-500
+                      "
                     >
                       No Students Found
                     </td>
@@ -410,37 +911,65 @@ const handleUpdateStudent =
                     (student) => (
 
                       <tr
-                        key={student.id}
-                        className="border-t hover:bg-slate-50"
+                        key={
+                          student.id
+                        }
+                        className="
+                          border-t
+                          hover:bg-slate-50
+                        "
                       >
 
                         <td className="p-4">
                           {student.id}
                         </td>
 
-                        <td className="p-4 font-medium">
+
+                        <td
+                          className="
+                            p-4
+                            font-medium
+                          "
+                        >
                           {student.full_name}
                         </td>
+
 
                         <td className="p-4">
                           {student.roll_number}
                         </td>
 
-                      <td className="p-4">
-  {student.class_name}
-</td>
-
-<td className="p-4">
-  {student.branch_name}
-</td>
-
-<td className="p-4">
-  {student.section_name}
-</td>
 
                         <td className="p-4">
-                          {student.phone}
+                          {student.class_name ||
+                            "-"}
                         </td>
+
+
+                        <td className="p-4">
+                          {student.branch_name ||
+                            "-"}
+                        </td>
+
+
+                        <td className="p-4">
+                          {student.section_name ||
+                            student.section ||
+                            "-"}
+                        </td>
+
+
+                        <td className="p-4">
+                          {student.batch_code ||
+                            "-"}
+                        </td>
+
+
+                        <td className="p-4">
+                          {student.phone ||
+                            "-"}
+                        </td>
+
 
                         <td className="p-4">
 
@@ -448,55 +977,125 @@ const handleUpdateStudent =
                             className={
                               student.status ===
                               "ACTIVE"
-                                ? "bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm"
-                                : "bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm"
+
+                                ? `
+                                  bg-green-100
+                                  text-green-700
+                                  px-3
+                                  py-1
+                                  rounded-full
+                                  text-sm
+                                `
+
+                                : `
+                                  bg-red-100
+                                  text-red-700
+                                  px-3
+                                  py-1
+                                  rounded-full
+                                  text-sm
+                                `
                             }
                           >
-                            {
-                              student.status
-                            }
+                            {student.status}
                           </span>
 
                         </td>
 
+
                         <td className="p-4">
 
-                          <div className="flex gap-2">
-
-  <button
-    onClick={() =>
-      handleEditClick(
-        student
-      )
-    }
-    className="bg-blue-600 text-white px-3 py-2 rounded-lg"
-  >
-    Edit
-  </button>
-
-  <button
-    onClick={() =>
-      handleStatusChange(
-        student.id,
-        student.status
-      )
-    }
-    className="bg-yellow-500 text-white px-3 py-2 rounded-lg"
-  >
-    Status
-  </button>
-
-</div><button
-                            onClick={() =>
-                              handleStatusChange(
-                                student.id,
-                                student.status
-                              )
-                            }
-                            className="bg-yellow-500 text-white px-3 py-2 rounded-lg"
+                          <div
+                            className="
+                              flex
+                              gap-2
+                              flex-wrap
+                            "
                           >
-                            Change Status
-                          </button>
+
+                            {/* EDIT */}
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleEditClick(
+                                  student
+                                )
+                              }
+                              className="
+                                bg-blue-600
+                                hover:bg-blue-700
+                                text-white
+                                px-3
+                                py-2
+                                rounded-lg
+                              "
+                            >
+                              Edit
+                            </button>
+
+
+                            {/* STATUS */}
+
+                            <button
+                              type="button"
+                              disabled={
+                                statusUpdatingId ===
+                                student.id
+                              }
+                              onClick={() =>
+                                handleStatusChange(
+                                  student.id,
+                                  student.status
+                                )
+                              }
+                              className="
+                                bg-yellow-500
+                                hover:bg-yellow-600
+                                disabled:opacity-50
+                                text-white
+                                px-3
+                                py-2
+                                rounded-lg
+                              "
+                            >
+                              {statusUpdatingId ===
+                              student.id
+                                ? "..."
+                                : "Status"}
+                            </button>
+
+
+                            {/* DELETE */}
+
+                            <button
+                              type="button"
+                              disabled={
+                                deletingId ===
+                                student.id
+                              }
+                              onClick={() =>
+                                handleDeleteStudent(
+                                  student.id
+                                )
+                              }
+                              className="
+                                bg-red-600
+                                hover:bg-red-700
+                                disabled:opacity-50
+                                text-white
+                                px-3
+                                py-2
+                                rounded-lg
+                              "
+                            >
+                              {deletingId ===
+                              student.id
+                                ? "..."
+                                : "Delete"}
+                            </button>
+
+                          </div>
 
                         </td>
 
@@ -516,30 +1115,51 @@ const handleUpdateStudent =
         </div>
 
       </div>
-      {
 
-        
-  showEditModal && (
 
-    <EditStudentModal
-      student={selectedStudent}
-      onClose={() =>
-        setShowEditModal(
-          false
-        )
-      }
-      onUpdate={
-        handleUpdateStudent
-      }
-    />
+      {/* ================================================= */}
+      {/* EDIT MODAL */}
+      {/* ================================================= */}
 
-  )
-}
+      {showEditModal && (
+
+        <EditStudentModal
+          student={
+            selectedStudent
+          }
+
+          branches={
+            branches
+          }
+
+          schoolClasses={
+            schoolClasses
+          }
+
+          sections={
+            sections
+          }
+
+          batches={
+            batches
+          }
+
+          onClose={
+            handleCloseEdit
+          }
+
+          onUpdate={
+            handleUpdateStudent
+          }
+        />
+
+      )}
 
     </AdminLayout>
 
   );
 
 }
+
 
 export default Students;

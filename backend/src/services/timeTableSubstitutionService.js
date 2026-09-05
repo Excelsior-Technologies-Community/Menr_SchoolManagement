@@ -8,6 +8,11 @@ const {
   "../repositories/timeTableSubstitutionRepository"
 );
 
+
+// =========================================================
+// CREATE
+// =========================================================
+
 const createTimeTableSubstitutionService =
 async (data) => {
 
@@ -19,6 +24,11 @@ async (data) => {
 
 };
 
+
+// =========================================================
+// GET ALL
+// =========================================================
+
 const getAllTimeTableSubstitutionsService =
 async () => {
 
@@ -26,14 +36,33 @@ async () => {
 
 };
 
+
+// =========================================================
+// GET BY ID
+// =========================================================
+
 const getTimeTableSubstitutionByIdService =
 async (id) => {
 
-  return await getTimeTableSubstitutionById(
-    id
-  );
+  const result =
+    await getTimeTableSubstitutionById(
+      id
+    );
+
+  if (!result) {
+    throw new Error(
+      "Substitution not found"
+    );
+  }
+
+  return result;
 
 };
+
+
+// =========================================================
+// UPDATE
+// =========================================================
 
 const updateTimeTableSubstitutionService =
 async (
@@ -48,6 +77,11 @@ async (
 
 };
 
+
+// =========================================================
+// DELETE
+// =========================================================
+
 const deleteTimeTableSubstitutionService =
 async (id) => {
 
@@ -57,10 +91,17 @@ async (id) => {
 
 };
 
+
 module.exports = {
+
   createTimeTableSubstitutionService,
+
   getAllTimeTableSubstitutionsService,
+
   getTimeTableSubstitutionByIdService,
+
   updateTimeTableSubstitutionService,
+
   deleteTimeTableSubstitutionService
+
 };

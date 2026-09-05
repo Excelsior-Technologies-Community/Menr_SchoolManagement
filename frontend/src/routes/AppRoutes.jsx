@@ -28,6 +28,15 @@ import ResetPassword from "../pages/Auth/ResetPassword";
 
 import Dashboard from "../pages/Dashboard/Dashboard";
 import Profile from "../pages/Profile/Profile";
+import MyProfile from "../pages/StudentDashboard/MyProfile";
+import MyResult from "../pages/StudentDashboard/MyResult";
+import MyFees from "../pages/StudentDashboard/MyFees";
+import MyAttendance from "../pages/StudentDashboard/MyAttendance";
+import MyClass from "../pages/StudentDashboard/MyClass";
+import MyClassmates from "../pages/StudentDashboard/MyClassmates";
+import MySubjects from "../pages/StudentDashboard/MySubjects";
+import MyTimetable from "../pages/StudentDashboard/MyTimetable";
+import ChangePassword from "../pages/StudentDashboard/ChangePassword";
 
 
 // =========================================================
@@ -64,6 +73,7 @@ import StaffType from "../pages/StaffType/StaffType";
 import StaffDepartment from "../pages/StaffDepartment/StaffDepartment";
 import Students from "../pages/Students/Students";
 
+
 import StaffSchedule from "../pages/StaffSchedule/StaffSchedule";
 import StaffAttendance from "../pages/StaffAttendance/StaffAttendance";
 import LeaveRequest from "../pages/LeaveRequest/LeaveRequest";
@@ -74,6 +84,7 @@ import LeaveRequest from "../pages/LeaveRequest/LeaveRequest";
 // =========================================================
 
 import Attendance from "../pages/Attendance/Attendance";
+import AttendanceStatus from "../pages/AttendanceStatus/AttendanceStatus";
 
 
 // =========================================================
@@ -105,11 +116,17 @@ import EditTimetable from "../pages/Timetable/EditTimetable";
 import ViewTimetable from "../pages/Timetable/ViewTimetable";
 import ReportCard from "../pages/ReportCard/ReportCard";
 import Classes from "../pages/Classes/Classes";
+import ClassSubjects from "../pages/ClassSubjects/ClassSubjects";
+import TeacherSubjects from "../pages/TeacherSubject/TeacherSubjects";
 
 import ExamTimetable from "../pages/ExamTimetable/ExamTimetable";
 import AddExamTimetable from "../pages/ExamTimetable/AddExamTimetable";
 import EditExamTimetable from "../pages/ExamTimetable/EditExamTimetable";
 import ViewExamTimetable from "../pages/ExamTimetable/ViewExamTimetable";
+
+import ExamEligibilitySettings from "../pages/ExamEligibility/ExamEligibilitySettings";
+import ExamHalls from "../pages/ExamHalls/ExamHalls";
+import ExamHallAllocation from "../pages/ExamHallAllocation/ExamHallAllocation";
 
 import TimeTableSubstitution from "../pages/TimeTableSubstitution/TimeTableSubstitution";
 import AddTimeTableSubstitution from "../pages/TimeTableSubstitution/AddTimeTableSubstitution";
@@ -313,6 +330,152 @@ function AppRoutes() {
           }
         />
 
+
+// =========================================================
+// STUDENT PORTAL
+// =========================================================
+
+<Route
+  path="/student/profile"
+  element={
+    <RoleRoute
+      allowedRoles={[
+        "STUDENT"
+      ]}
+    >
+      <MyProfile />
+    </RoleRoute>
+  }
+/>
+
+<Route
+  path="/student/result"
+  element={
+    <RoleRoute
+      allowedRoles={[
+        "STUDENT"
+      ]}
+    >
+      <MyResult />
+    </RoleRoute>
+  }
+/>
+
+<Route
+  path="/student/fees"
+  element={
+    <RoleRoute
+      allowedRoles={[
+        "STUDENT"
+      ]}
+    >
+      <MyFees />
+    </RoleRoute>
+  }
+/>
+
+
+// =========================================================
+// STUDENT PORTAL - ADDITIONAL ROUTES
+// =========================================================
+
+<Route
+  path="/student/class"
+  element={
+    <RoleRoute
+      allowedRoles={[
+        "STUDENT"
+      ]}
+    >
+      <MyClass />
+    </RoleRoute>
+  }
+/>
+
+<Route
+  path="/student/classmates"
+  element={
+    <RoleRoute
+      allowedRoles={[
+        "STUDENT"
+      ]}
+    >
+      <MyClassmates />
+    </RoleRoute>
+  }
+/>
+
+<Route
+  path="/student/subjects"
+  element={
+    <RoleRoute
+      allowedRoles={[
+        "STUDENT"
+      ]}
+    >
+      <MySubjects />
+    </RoleRoute>
+  }
+/>
+
+<Route
+  path="/student/timetable"
+  element={
+    <RoleRoute
+      allowedRoles={[
+        "STUDENT"
+      ]}
+    >
+      <MyTimetable />
+    </RoleRoute>
+  }
+/>
+
+<Route
+  path="/student/attendance"
+  element={
+    <RoleRoute
+      allowedRoles={[
+        "STUDENT"
+      ]}
+    >
+      <MyAttendance />
+    </RoleRoute>
+  }
+/>
+
+<Route
+  path="/student/change-password"
+  element={
+    <RoleRoute
+      allowedRoles={[
+        "STUDENT"
+      ]}
+    >
+      <ChangePassword />
+    </RoleRoute>
+  }
+/>
+
+
+<Route
+  path="/profile"
+  element={
+    <RoleRoute
+      allowedRoles={[
+        "SUPER_ADMIN",
+        "SCHOOL_ADMIN",
+        "STAFF",
+        "STUDENT"
+      ]}
+    >
+      <Profile />
+    </RoleRoute>
+  }
+/>
+
+
+
         <Route
           path="/profile"
           element={
@@ -481,6 +644,21 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
+
+        <Route
+  path="/attendance-status"
+  element={
+    <RoleRoute
+      allowedRoles={[
+        "SUPER_ADMIN",
+        "SCHOOL_ADMIN",
+        "STAFF"
+      ]}
+    >
+      <AttendanceStatus />
+    </RoleRoute>
+  }
+/>
 
 
         {/* =================================================
@@ -715,6 +893,34 @@ function AppRoutes() {
         />
 
         <Route
+  path="/class-subjects"
+  element={
+    <RoleRoute
+      allowedRoles={[
+        "SUPER_ADMIN",
+        "SCHOOL_ADMIN"
+      ]}
+    >
+      <ClassSubjects />
+    </RoleRoute>
+  }
+/>
+
+<Route
+  path="/teacher-subjects"
+  element={
+    <RoleRoute
+      allowedRoles={[
+        "SUPER_ADMIN",
+        "SCHOOL_ADMIN"
+      ]}
+    >
+      <TeacherSubjects />
+    </RoleRoute>
+  }
+/>
+
+        <Route
           path="/exams"
           element={
             <RoleRoute
@@ -933,6 +1139,48 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
+
+        <Route
+  path="/exam-eligibility-settings"
+  element={
+    <RoleRoute
+      allowedRoles={[
+        "SUPER_ADMIN",
+        "SCHOOL_ADMIN"
+      ]}
+    >
+      <ExamEligibilitySettings />
+    </RoleRoute>
+  }
+/>
+
+<Route
+  path="/exam-halls"
+  element={
+    <RoleRoute
+      allowedRoles={[
+        "SUPER_ADMIN",
+        "SCHOOL_ADMIN"
+      ]}
+    >
+      <ExamHalls />
+    </RoleRoute>
+  }
+/>
+
+<Route
+  path="/exam-hall-allocation"
+  element={
+    <RoleRoute
+      allowedRoles={[
+        "SUPER_ADMIN",
+        "SCHOOL_ADMIN"
+      ]}
+    >
+      <ExamHallAllocation />
+    </RoleRoute>
+  }
+/>
 
 
         {/* =================================================

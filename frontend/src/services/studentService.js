@@ -68,3 +68,119 @@ export const deleteStudent = async (
 
   return response.data;
 };
+
+// =========================================================
+// STUDENT PORTAL APIs
+// =========================================================
+
+export const getStudentMyClass = async () => {
+  const response = await api.get(
+    "/students/me/class"
+  );
+
+  return response.data;
+};
+
+
+export const getStudentClassmates = async () => {
+  const response = await api.get(
+    "/students/me/classmates"
+  );
+
+  return response.data;
+};
+
+
+export const getStudentMySubjects = async () => {
+  const response = await api.get(
+    "/students/me/subjects"
+  );
+
+  return response.data;
+};
+
+
+export const getStudentMyTimetable = async () => {
+  const response = await api.get(
+    "/students/me/timetable"
+  );
+
+  return response.data;
+};
+
+
+export const getStudentMyAttendance = async () => {
+  const response = await api.get(
+    "/students/me/attendance"
+  );
+
+  return response.data;
+};
+
+// =========================================================
+// STUDENT PROFILE
+// =========================================================
+
+export const getStudentProfile = async () => {
+
+  const response = await api.get(
+    "/students/profile"
+  );
+
+  return response.data;
+
+};
+
+// =========================================================
+// UPDATE STUDENT OWN PROFILE
+// =========================================================
+
+export const updateStudentProfile = async (data) => {
+
+  const response = await api.put(
+    "/students/profile",
+    data
+  );
+
+  return response.data;
+
+};
+
+
+// =========================================================
+// STUDENT RESULT
+// =========================================================
+
+export const getStudentResult = async () => {
+
+  const response = await api.get(
+    "/students/dashboard"
+  );
+
+  return response.data;
+
+};
+
+
+// =========================================================
+// STUDENT FEES
+// =========================================================
+
+export const getStudentFees = async () => {
+
+  const response = await api.get(
+    "/students/dashboard"
+  );
+
+  return response.data;
+
+};
+
+export const changeStudentPassword = async (data) => {
+  const response = await api.put(
+    "/students/change-password",
+    data
+  );
+
+  return response.data;
+};

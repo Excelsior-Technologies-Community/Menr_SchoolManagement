@@ -2,7 +2,6 @@ import {
   useEffect,
   useState
 } from "react";
-
 import {
   LayoutDashboard,
   School,
@@ -28,9 +27,11 @@ import {
   GraduationCap,
   Library,
   Wallet,
-  Bell,
-  BadgePercent,
-  CalendarHeart
+Award,
+LockKeyhole,
+Bell,
+BadgePercent,
+CalendarHeart
 } from "lucide-react";
 
 import {
@@ -180,10 +181,15 @@ function Sidebar() {
     // Academics
     if (
       path.startsWith("/classes") ||
+       path.startsWith("/class-subjects") ||
+       path.startsWith("/teacher-subjects") ||
       path.startsWith("/exams") ||
       path.startsWith("/student-marks") ||
       path.startsWith("/exam-timetable") ||
       path.startsWith("/report-card") ||
+      path.startsWith("/exam-eligibility-settings") ||
+path.startsWith("/exam-halls") ||
+path.startsWith("/exam-hall-allocation") ||
       path === "/timetable" ||
       path.startsWith("/timetable/") ||
       path.startsWith("/timetable-substitutions")
@@ -1262,6 +1268,42 @@ function Sidebar() {
 
                   </Link>
 
+                  <Link
+  to="/class-subjects"
+  className={
+    subLinkClass(
+      "/class-subjects"
+    )
+  }
+  onClick={
+    closeMobile
+  }
+>
+
+  <BookOpen size={16} />
+
+  Class Subjects
+
+</Link>
+
+<Link
+  to="/teacher-subjects"
+  className={
+    subLinkClass(
+      "/teacher-subjects"
+    )
+  }
+  onClick={
+    closeMobile
+  }
+>
+
+  <BookOpen size={16} />
+
+  Teacher Subjects
+
+</Link>
+
 
                   <Link
                     to="/exams"
@@ -1318,6 +1360,69 @@ function Sidebar() {
                     />
 
                     Exam Timetable
+
+                  </Link>
+
+
+                                    <Link
+                    to="/exam-eligibility-settings"
+                    className={
+                      subLinkClass(
+                        "/exam-eligibility-settings"
+                      )
+                    }
+                    onClick={
+                      closeMobile
+                    }
+                  >
+
+                    <ClipboardCheck
+                      size={16}
+                    />
+
+                    Exam Eligibility Settings
+
+                  </Link>
+
+
+                  <Link
+                    to="/exam-halls"
+                    className={
+                      subLinkClass(
+                        "/exam-halls"
+                      )
+                    }
+                    onClick={
+                      closeMobile
+                    }
+                  >
+
+                    <Building2
+                      size={16}
+                    />
+
+                    Exam Halls
+
+                  </Link>
+
+
+                  <Link
+                    to="/exam-hall-allocation"
+                    className={
+                      subLinkClass(
+                        "/exam-hall-allocation"
+                      )
+                    }
+                    onClick={
+                      closeMobile
+                    }
+                  >
+
+                    <ClipboardCheck
+                      size={16}
+                    />
+
+                    Exam Hall Allocation
 
                   </Link>
 
@@ -1503,69 +1608,111 @@ function Sidebar() {
               STUDENT - CURRENTLY SAFE ACCESS ONLY
           ================================================= */}
 
-          {isStudent && (
+         {/* =================================================
+    STUDENT PORTAL
+================================================= */}
 
-            <>
+{isStudent && (
+  <>
+    <SectionTitle>
+      Student Portal
+    </SectionTitle>
 
-              <SectionTitle>
-                Student Portal
-              </SectionTitle>
+    <Link
+      to="/student/dashboard"
+      className={linkClass("/student/dashboard")}
+      onClick={closeMobile}
+    >
+      <LayoutDashboard size={19} />
+      <span>Dashboard</span>
+    </Link>
 
+    <Link
+      to="/student/my-class"
+      className={linkClass("/student/my-class")}
+      onClick={closeMobile}
+    >
+      <School size={19} />
+      <span>My Class</span>
+    </Link>
 
-              <div className="
-                px-3
-                py-3
-                rounded-xl
-                bg-slate-900
-                border
-                border-slate-800
-              ">
+    <Link
+      to="/student/classmates"
+      className={linkClass("/student/classmates")}
+      onClick={closeMobile}
+    >
+      <Users size={19} />
+      <span>My Classmates</span>
+    </Link>
 
-                <div className="
-                  flex
-                  items-start
-                  gap-3
-                ">
+    <Link
+      to="/student/my-subjects"
+      className={linkClass("/student/my-subjects")}
+      onClick={closeMobile}
+    >
+      <BookOpen size={19} />
+      <span>My Subjects</span>
+    </Link>
 
-                  <GraduationCap
-                    size={19}
-                    className="
-                      text-blue-400
-                      mt-0.5
-                    "
-                  />
+    <Link
+      to="/student/timetable"
+      className={linkClass("/student/timetable")}
+      onClick={closeMobile}
+    >
+      <CalendarDays size={19} />
+      <span>My Timetable</span>
+    </Link>
 
-                  <div>
+    <Link
+      to="/student/attendance"
+      className={linkClass("/student/attendance")}
+      onClick={closeMobile}
+    >
+      <ClipboardCheck size={19} />
+      <span>My Attendance</span>
+    </Link>
 
-                    <p className="
-                      text-sm
-                      font-semibold
-                      text-white
-                    ">
-                      Student Portal
-                    </p>
+    <Link
+      to="/student/results"
+      className={linkClass("/student/results")}
+      onClick={closeMobile}
+    >
+      <Award size={19} />
+      <span>My Results</span>
+    </Link>
 
-                    <p className="
-                      text-xs
-                      text-slate-400
-                      mt-1
-                      leading-5
-                    ">
-                      Your attendance, results,
-                      timetable and fee pages will
-                      appear here with your own data.
-                    </p>
+    <Link
+      to="/student/fees"
+      className={linkClass("/student/fees")}
+      onClick={closeMobile}
+    >
+      <Wallet size={19} />
+      <span>My Fees</span>
+    </Link>
 
-                  </div>
+    <SectionTitle>
+      Account
+    </SectionTitle>
 
-                </div>
+    <Link
+      to="/student/profile"
+      className={linkClass("/student/profile")}
+      onClick={closeMobile}
+    >
+      <User size={19} />
+      <span>My Profile</span>
+    </Link>
 
-              </div>
-
-            </>
-
-          )}
-
+    <Link
+      to="/student/change-password"
+      className={linkClass("/student/change-password")}
+      onClick={closeMobile}
+    >
+      <LockKeyhole size={19} />
+      <span>Change Password</span>
+    </Link>
+  </>
+)}
 
           {/* =================================================
               FINANCE - ADMIN ONLY
@@ -2005,6 +2152,27 @@ function Sidebar() {
                     Attendance
 
                   </Link>
+
+
+                  <Link
+  to="/attendance-status"
+  className={
+    subLinkClass(
+      "/attendance-status"
+    )
+  }
+  onClick={
+    closeMobile
+  }
+>
+
+  <ClipboardCheck
+    size={16}
+  />
+
+  Attendance Status
+
+</Link>
 
 
                   <Link

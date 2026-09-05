@@ -8,6 +8,7 @@ const {
   getStudentById,
   updateStudent,
   updateStudentStatus,
+  deleteStudent,
   getStudentsWithPagination,
   searchStudents,
   findStudentByRollNumber,
@@ -18,33 +19,59 @@ const {
   getStudentDashboardSubjects,
   getStudentDashboardAttendance,
   getStudentDashboardMarks,
-  getStudentDashboardFees
+  getStudentDashboardFees,
 
+  getStudentMyClass,
+  getStudentClassmates,
+  getStudentMySubjects,
+  getStudentMyTimetable,
+  getStudentMyAttendance
 } = require("../repositories/studentRepository");
 
-const createStudentService = async (studentData) => {
+
+// =========================================================
+// CREATE STUDENT
+// =========================================================
+
+const createStudentService = async (
+  studentData
+) => {
 
   const defaultPassword =
-    process.env.DEFAULT_STUDENT_PASSWORD || "Student@123";
+    process.env.DEFAULT_STUDENT_PASSWORD ||
+    "Student@123";
 
   const hashedPassword =
-    await bcrypt.hash(defaultPassword, 10);
+    await bcrypt.hash(
+      defaultPassword,
+      10
+    );
 
-  studentData.password = hashedPassword;
+  studentData.password =
+    hashedPassword;
 
-  studentData.status = "ACTIVE";
+  studentData.status =
+    "ACTIVE";
 
-  await createStudent(studentData);
+  await createStudent(
+    studentData
+  );
 
   return {
-    message: "Student Created Successfully",
+    message:
+      "Student Created Successfully",
+
     defaultPassword
   };
 };
 
-const getAllStudentsService = async (
-  user
-) => {
+
+// =========================================================
+// GET ALL STUDENTS
+// =========================================================
+
+const getAllStudentsService =
+async (user) => {
 
   if (
     user.role === "SUPER_ADMIN"
@@ -53,6 +80,7 @@ const getAllStudentsService = async (
     return await getAllStudents();
 
   }
+
 
   if (
     user.role === "SCHOOL_ADMIN"
@@ -64,21 +92,34 @@ const getAllStudentsService = async (
 
   }
 
+
   throw new Error(
     "Unauthorized"
   );
 
 };
 
-const getStudentByIdService = async (
-  id
-) => {
 
-  return await getStudentById(id);
+// =========================================================
+// GET STUDENT BY ID
+// =========================================================
+
+const getStudentByIdService =
+async (id) => {
+
+  return await getStudentById(
+    id
+  );
 
 };
 
-const updateStudentService = async (
+
+// =========================================================
+// UPDATE STUDENT
+// =========================================================
+
+const updateStudentService =
+async (
   id,
   data
 ) => {
@@ -90,10 +131,41 @@ const updateStudentService = async (
 
 };
 
-const updateStudentStatusService = async (
+
+// =========================================================
+// UPDATE STUDENT STATUS
+// =========================================================
+
+const updateStudentStatusService =
+async (
   id,
   status
 ) => {
+
+  if (
+    !status
+  ) {
+
+    throw new Error(
+      "Status is required"
+    );
+
+  }
+
+
+  if (
+    ![
+      "ACTIVE",
+      "INACTIVE"
+    ].includes(status)
+  ) {
+
+    throw new Error(
+      "Invalid Student Status"
+    );
+
+  }
+
 
   return await updateStudentStatus(
     id,
@@ -101,6 +173,42 @@ const updateStudentStatusService = async (
   );
 
 };
+
+
+// =========================================================
+// DELETE STUDENT
+// =========================================================
+
+const deleteStudentService =
+async (
+  id
+) => {
+
+  const student =
+    await getStudentById(
+      id
+    );
+
+
+  if (!student) {
+
+    throw new Error(
+      "Student Not Found"
+    );
+
+  }
+
+
+  return await deleteStudent(
+    id
+  );
+
+};
+
+
+// =========================================================
+// PAGINATION
+// =========================================================
 
 const getStudentsWithPaginationService =
 async (
@@ -115,17 +223,39 @@ async (
 
 };
 
-const searchStudentsService = async (
+
+// =========================================================
+// SEARCH STUDENTS
+// =========================================================
+
+const searchStudentsService =
+async (
   search
 ) => {
 
+  if (
+    !search ||
+    !search.trim()
+  ) {
+
+    return [];
+
+  }
+
+
   return await searchStudents(
-    search
+    search.trim()
   );
 
 };
-// Student Login
-const loginStudentService = async (
+
+
+// =========================================================
+// STUDENT LOGIN
+// =========================================================
+
+const loginStudentService =
+async (
   rollNumber,
   password
 ) => {
@@ -135,11 +265,27 @@ const loginStudentService = async (
       rollNumber
     );
 
+
   if (!student) {
+
     throw new Error(
       "Invalid Roll Number"
     );
+
   }
+
+
+  if (
+    student.status !==
+    "ACTIVE"
+  ) {
+
+    throw new Error(
+      "Student Account is Inactive"
+    );
+
+  }
+
 
   const isMatch =
     await bcrypt.compare(
@@ -147,43 +293,93 @@ const loginStudentService = async (
       student.password
     );
 
+
   if (!isMatch) {
+
     throw new Error(
       "Invalid Password"
     );
+
   }
 
-  const token = jwt.sign(
-    {
-      id: student.id,
-      school_id: student.school_id,
-      branch_id: student.branch_id,
-      role: "STUDENT"
-    },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "1d"
-    }
-  );
+
+  const token =
+    jwt.sign(
+      {
+        id: student.id,
+
+        school_id:
+          student.school_id,
+
+        branch_id:
+          student.branch_id,
+
+        role:
+          "STUDENT"
+      },
+
+      process.env.JWT_SECRET,
+
+      {
+        expiresIn:
+          "1d"
+      }
+    );
+
 
   return token;
+
 };
 
-// Change Student Password
-const changeStudentPasswordService = async (
+
+// =========================================================
+// CHANGE STUDENT PASSWORD
+// =========================================================
+
+const changeStudentPasswordService =
+async (
   studentId,
   oldPassword,
   newPassword
 ) => {
 
+  if (
+    !oldPassword ||
+    !newPassword
+  ) {
+
+    throw new Error(
+      "Old Password and New Password are required"
+    );
+
+  }
+
+
+  if (
+    newPassword.length < 6
+  ) {
+
+    throw new Error(
+      "New Password must be at least 6 characters"
+    );
+
+  }
+
+
   const student =
-  await getStudentPasswordById(studentId);
+    await getStudentPasswordById(
+      studentId
+    );
+
 
   if (!student) {
+
     throw new Error(
       "Student Not Found"
     );
+
   }
+
 
   const isMatch =
     await bcrypt.compare(
@@ -191,11 +387,15 @@ const changeStudentPasswordService = async (
       student.password
     );
 
+
   if (!isMatch) {
+
     throw new Error(
       "Old Password Incorrect"
     );
+
   }
+
 
   const hashedPassword =
     await bcrypt.hash(
@@ -203,22 +403,29 @@ const changeStudentPasswordService = async (
       10
     );
 
+
   await updateStudentPassword(
     studentId,
     hashedPassword
   );
 
+
   return {
+
     message:
       "Password Changed Successfully"
+
   };
+
 };
 
+
 // =========================================================
-// STUDENT DASHBOARD SERVICE
+// STUDENT DASHBOARD
 // =========================================================
 
-const getStudentDashboardService = async (
+const getStudentDashboardService =
+async (
   studentId
 ) => {
 
@@ -276,15 +483,121 @@ const getStudentDashboardService = async (
   };
 
 };
+
+
+// =========================================================
+// EXPORTS
+// =========================================================
+// =========================================================
+// STUDENT PORTAL - MY CLASS
+// =========================================================
+
+const getStudentMyClassService = async (
+  studentId
+) => {
+
+  const data =
+    await getStudentMyClass(
+      studentId
+    );
+
+  if (!data) {
+    throw new Error(
+      "Student class details not found"
+    );
+  }
+
+  return data;
+};
+
+
+// =========================================================
+// STUDENT PORTAL - CLASSMATES
+// =========================================================
+
+const getStudentClassmatesService = async (
+  studentId
+) => {
+
+  return await getStudentClassmates(
+    studentId
+  );
+
+};
+
+
+// =========================================================
+// STUDENT PORTAL - MY SUBJECTS
+// =========================================================
+
+const getStudentMySubjectsService = async (
+  studentId
+) => {
+
+  return await getStudentMySubjects(
+    studentId
+  );
+
+};
+
+
+// =========================================================
+// STUDENT PORTAL - MY TIMETABLE
+// =========================================================
+
+const getStudentMyTimetableService = async (
+  studentId
+) => {
+
+  return await getStudentMyTimetable(
+    studentId
+  );
+
+};
+
+
+// =========================================================
+// STUDENT PORTAL - MY ATTENDANCE
+// =========================================================
+
+const getStudentMyAttendanceService = async (
+  studentId
+) => {
+
+  return await getStudentMyAttendance(
+    studentId
+  );
+
+};
+
+
 module.exports = {
+
   createStudentService,
+
   getAllStudentsService,
+
   getStudentByIdService,
+
   updateStudentService,
+
   updateStudentStatusService,
+
+  deleteStudentService,
+
   getStudentsWithPaginationService,
+
   searchStudentsService,
+
   loginStudentService,
+
   getStudentDashboardService,
+  getStudentMyClassService,
+  getStudentClassmatesService,
+  getStudentMySubjectsService,
+  getStudentMyTimetableService,
+  getStudentMyAttendanceService,
+
   changeStudentPasswordService
+
 };

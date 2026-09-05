@@ -1,33 +1,111 @@
-const express = require("express");
+const express =
+  require("express");
 
-const router = express.Router();
+const router =
+  express.Router();
+
 
 const {
+
   markAttendance,
-  getAllAttendance
-} = require("../controllers/attendanceController");
+
+  updateAttendance,
+
+  getAllAttendance,
+
+  getAttendanceByGroup
+
+} = require(
+  "../controllers/attendanceController"
+);
+
 
 const authMiddleware =
-require("../middlewares/authMiddleware");
+  require(
+    "../middlewares/authMiddleware"
+  );
+
 
 const authorizeRoles =
-require("../middlewares/roleMiddleware");
+  require(
+    "../middlewares/roleMiddleware"
+  );
 
-router.post(
-  "/",
+
+// =========================================================
+// GET GROUP ATTENDANCE
+// =========================================================
+
+router.get(
+  "/group",
+
   authMiddleware,
+
   authorizeRoles(
     "SUPER_ADMIN",
     "SCHOOL_ADMIN",
     "STAFF"
   ),
-  markAttendance
+
+  getAttendanceByGroup
 );
+
+
+// =========================================================
+// GET ALL
+// =========================================================
 
 router.get(
   "/",
+
   authMiddleware,
+
+  authorizeRoles(
+    "SUPER_ADMIN",
+    "SCHOOL_ADMIN",
+    "STAFF"
+  ),
+
   getAllAttendance
 );
+
+
+// =========================================================
+// MARK
+// =========================================================
+
+router.post(
+  "/",
+
+  authMiddleware,
+
+  authorizeRoles(
+    "SUPER_ADMIN",
+    "SCHOOL_ADMIN",
+    "STAFF"
+  ),
+
+  markAttendance
+);
+
+
+// =========================================================
+// UPDATE
+// =========================================================
+
+router.put(
+  "/:id",
+
+  authMiddleware,
+
+  authorizeRoles(
+    "SUPER_ADMIN",
+    "SCHOOL_ADMIN",
+    "STAFF"
+  ),
+
+  updateAttendance
+);
+
 
 module.exports = router;

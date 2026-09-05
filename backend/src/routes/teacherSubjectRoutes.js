@@ -1,17 +1,13 @@
-const express =
-  require("express");
+const express = require("express");
 
-const router =
-  express.Router();
+const router = express.Router();
 
 const {
   createTeacherSubject,
   getAllTeacherSubjects,
   getSubjectsByTeacher,
   deleteTeacherSubject
-} = require(
-  "../controllers/teacherSubjectController"
-);
+} = require("../controllers/teacherSubjectController");
 
 const authMiddleware =
   require("../middlewares/authMiddleware");
@@ -19,7 +15,10 @@ const authMiddleware =
 const authorizeRoles =
   require("../middlewares/roleMiddleware");
 
-// Assign Subject
+// =====================================================
+// CREATE TEACHER SUBJECT MAPPING
+// =====================================================
+
 router.post(
   "/",
   authMiddleware,
@@ -30,26 +29,36 @@ router.post(
   createTeacherSubject
 );
 
-// Get By Teacher
-router.get(
-  "/staff/:staffId",
-  authMiddleware,
-  getSubjectsByTeacher
-);
+// =====================================================
+// GET ALL MAPPINGS
+// =====================================================
 
-// Get All
 router.get(
   "/",
   authMiddleware,
   getAllTeacherSubjects
 );
 
-// Delete
+// =====================================================
+// GET SUBJECTS BY TEACHER
+// =====================================================
+
+router.get(
+  "/teacher/:staffId",
+  authMiddleware,
+  getSubjectsByTeacher
+);
+
+// =====================================================
+// DELETE MAPPING
+// =====================================================
+
 router.delete(
   "/:id",
   authMiddleware,
   authorizeRoles(
-    "SUPER_ADMIN"
+    "SUPER_ADMIN",
+    "SCHOOL_ADMIN"
   ),
   deleteTeacherSubject
 );
