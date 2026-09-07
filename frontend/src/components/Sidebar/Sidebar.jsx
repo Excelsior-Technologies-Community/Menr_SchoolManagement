@@ -186,12 +186,14 @@ function Sidebar() {
       path.startsWith("/exams") ||
       path.startsWith("/student-marks") ||
       path.startsWith("/exam-timetable") ||
+      path.startsWith("/exam-results") ||
       path.startsWith("/report-card") ||
       path.startsWith("/exam-eligibility-settings") ||
 path.startsWith("/exam-halls") ||
 path.startsWith("/exam-hall-allocation") ||
       path === "/timetable" ||
       path.startsWith("/timetable/") ||
+      path.startsWith("/exam-marks") ||
       path.startsWith("/timetable-substitutions")
     ) {
 
@@ -1364,6 +1366,18 @@ path.startsWith("/exam-hall-allocation") ||
                   </Link>
 
 
+                  <Link
+  to="/exam-marks"
+  className={
+    subLinkClass("/exam-marks")
+  }
+  onClick={closeMobile}
+>
+  <ClipboardCheck size={16} />
+  Exam Marks
+</Link>
+
+
                                     <Link
                     to="/exam-eligibility-settings"
                     className={
@@ -1463,6 +1477,25 @@ path.startsWith("/exam-hall-allocation") ||
                     Timetable
 
                   </Link>
+
+
+                  <Link
+  to="/exam-results"
+  className={
+    subLinkClass(
+      "/exam-results"
+    )
+  }
+  onClick={
+    closeMobile
+  }
+>
+  <ClipboardCheck
+    size={16}
+  />
+
+  Exam Results
+</Link>
 
 
                   <Link

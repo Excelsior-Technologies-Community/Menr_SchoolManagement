@@ -165,6 +165,13 @@ const studentMarkRoutes = require(
   "./src/routes/studentMarkRoutes"
 );
 
+const examMarksRoutes = require(
+  "./src/routes/examMarksRoutes"
+);
+
+const examResultRoutes = require(
+  "./src/routes/examResultRoutes"
+);
 
 const dashboardRoutes = require(
   "./src/routes/dashboardRoutes"
@@ -248,7 +255,6 @@ const schoolTransferRoutes = require(
 const branchTransferRoutes = require(
   "./src/routes/branchTransferRoutes"
 );
-
 
 const admissionInquiryRoutes = require(
   "./src/routes/admissionInquiryRoutes"
@@ -411,6 +417,11 @@ app.use(
   studentRoutes
 );
 
+app.use(
+  "/api/exam-marks",
+  examMarksRoutes
+);
+
 
 // =========================================================
 // SCHOOL TRANSFERS
@@ -521,6 +532,13 @@ app.use(
 app.use(
   "/api/exam-eligibility",
   examEligibilityRoutes
+);
+
+
+// Exam Results
+app.use(
+  "/api/exam-results",
+  examResultRoutes
 );
 
 

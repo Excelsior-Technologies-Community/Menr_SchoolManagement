@@ -128,6 +128,9 @@ import ExamEligibilitySettings from "../pages/ExamEligibility/ExamEligibilitySet
 import ExamHalls from "../pages/ExamHalls/ExamHalls";
 import ExamHallAllocation from "../pages/ExamHallAllocation/ExamHallAllocation";
 
+import ExamMarks from "../pages/ExamMarks/ExamMarks";
+import ExamResults from "../pages/ExamResults/ExamResults";
+
 import TimeTableSubstitution from "../pages/TimeTableSubstitution/TimeTableSubstitution";
 import AddTimeTableSubstitution from "../pages/TimeTableSubstitution/AddTimeTableSubstitution";
 import EditTimeTableSubstitution from "../pages/TimeTableSubstitution/EditTimeTableSubstitution";
@@ -949,6 +952,20 @@ function AppRoutes() {
         />
 
         <Route
+  path="/exam-marks"
+  element={
+    <RoleRoute
+      allowedRoles={[
+        "SUPER_ADMIN",
+        "SCHOOL_ADMIN",
+      ]}
+    >
+      <ExamMarks />
+    </RoleRoute>
+  }
+/>
+
+        <Route
           path="/report-card"
           element={
             <RoleRoute
@@ -1064,6 +1081,20 @@ function AppRoutes() {
             </RoleRoute>
           }
         />
+
+        <Route
+  path="/exam-results"
+  element={
+    <RoleRoute
+      allowedRoles={[
+        "SUPER_ADMIN",
+        "SCHOOL_ADMIN",
+      ]}
+    >
+      <ExamResults />
+    </RoleRoute>
+  }
+/>
 
         <Route
           path="/exam-timetable/view/:id"
